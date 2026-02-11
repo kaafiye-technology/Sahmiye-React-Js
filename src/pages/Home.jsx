@@ -1,97 +1,172 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Header from '../components/Header';
 import PropertyCard from '../components/PropertyCard';
-
-// Sample properties data
-const properties = [
-  {
-    id: 1,
-    title: "Modern 5 Bed Villa in Al Rawda",
-    price: 1700000,
-    location: "Al Rawda 3, Al Rawda, Ajman",
-    image: "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=800&h=600&fit=crop",
-    beds: 5,
-    baths: 6,
-    size: 3035,
-    type: "Villa",
-    description: "Spacious area, newly finished, 100% freehold own..."
-  },
-  {
-    id: 2,
-    title: "Luxury 5 Bed Villa in Al Rawda 1",
-    price: 2950000,
-    location: "Al Rawda 1, Al Rawda, Ajman",
-    image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&h=600&fit=crop",
-    beds: 5,
-    baths: 7,
-    size: 5600,
-    type: "Villa",
-    description: "Al Rawda1 Ajman - Premium villa in prime location"
-  },
-  {
-    id: 3,
-    title: "3 BR Luxury Apartment with Marina View",
-    price: 4500000,
-    location: "Dubai Marina, Dubai",
-    image: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&h=600&fit=crop",
-    beds: 3,
-    baths: 3,
-    size: 1850,
-    type: "Apartment",
-    description: "Modern apartment with stunning marina views"
-  },
-  {
-    id: 4,
-    title: "4 BR Luxury Penthouse Palm Jumeirah",
-    price: 25000000,
-    location: "Palm Jumeirah, Dubai",
-    image: "https://images.unsplash.com/photo-1567446537710-0c5ff5a61f73?w=800&h=600&fit=crop",
-    beds: 4,
-    baths: 5,
-    size: 5200,
-    type: "Penthouse",
-    description: "Exclusive penthouse on Palm Jumeirah"
-  },
-  {
-    id: 5,
-    title: "2 BR Townhouse in Arabian Ranches",
-    price: 3800000,
-    location: "Arabian Ranches, Dubai",
-    image: "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800&h=600&fit=crop",
-    beds: 2,
-    baths: 2,
-    size: 2100,
-    type: "Townhouse",
-    description: "Family-friendly townhouse in gated community"
-  },
-  {
-    id: 6,
-    title: "Studio Apartment Business Bay",
-    price: 1200000,
-    location: "Business Bay, Dubai",
-    image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=600&fit=crop",
-    beds: 0,
-    baths: 1,
-    size: 850,
-    type: "Studio",
-    description: "Compact studio in central business district"
-  },
-];
+import { properties } from '../data/properties'; 
 
 const Home = () => {
+  // Filter states
+  const [filters, setFilters] = useState({
+    purpose: 'buy',
+    location: '',
+    propertyType: '',
+    minPrice: '',
+    maxPrice: '',
+    bedrooms: ''
+  });
+
+  // Add sort state
+  const [sortBy, setSortBy] = useState('recommended');
+  const [filteredProperties, setFilteredProperties] = useState(properties);
+
+  // Handle filter changes
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilters(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  // Handle sort change
+  const handleSortChange = (e) => {
+    const value = e.target.value;
+    setSortBy(value);
+    
+    // Apply sorting to current filtered properties
+    let sorted = [...filteredProperties];
+    
+    switch(value) {
+      case 'price-low-high':
+        sorted.sort((a, b) => a.price - b.price);
+        break;
+      case 'price-high-low':
+        sorted.sort((a, b) => b.price - a.price);
+        break;
+      case 'newest':
+        sorted.sort((a, b) => b.id - a.id);
+        break;
+      case 'most-popular':
+        sorted.sort((a, b) => b.beds - a.beds);
+        break;
+      default:
+        // recommended - keep original order
+        sorted = [...filteredProperties];
+        break;
+    }
+    
+    setFilteredProperties(sorted);
+  };
+
+  // Apply filters
+  const applyFilters = () => {
+    let filtered = [...properties];
+
+    // Filter by purpose (buy/rent)
+    if (filters.purpose === 'rent') {
+      filtered = filtered.filter(property => property.price < 2000000);
+    }
+
+    // Filter by location
+    if (filters.location) {
+      filtered = filtered.filter(property => 
+        property.location.toLowerCase().includes(filters.location.toLowerCase())
+      );
+    }
+
+    // Filter by property type
+    if (filters.propertyType) {
+      filtered = filtered.filter(property => 
+        property.type === filters.propertyType
+      );
+    }
+
+    // Filter by min price
+    if (filters.minPrice) {
+      filtered = filtered.filter(property => 
+        property.price >= parseInt(filters.minPrice)
+      );
+    }
+
+    // Filter by max price
+    if (filters.maxPrice) {
+      filtered = filtered.filter(property => 
+        property.price <= parseInt(filters.maxPrice)
+      );
+    }
+
+    // Filter by bedrooms
+    if (filters.bedrooms) {
+      if (filters.bedrooms === '4+') {
+        filtered = filtered.filter(property => property.beds >= 4);
+      } else {
+        filtered = filtered.filter(property => 
+          property.beds === parseInt(filters.bedrooms)
+        );
+      }
+    }
+
+    // Apply current sort after filtering
+    let sorted = [...filtered];
+    
+    switch(sortBy) {
+      case 'price-low-high':
+        sorted.sort((a, b) => a.price - b.price);
+        break;
+      case 'price-high-low':
+        sorted.sort((a, b) => b.price - a.price);
+        break;
+      case 'newest':
+        sorted.sort((a, b) => b.id - a.id);
+        break;
+      case 'most-popular':
+        sorted.sort((a, b) => b.beds - a.beds);
+        break;
+      default:
+        // recommended - keep as is
+        break;
+    }
+
+    setFilteredProperties(sorted);
+  };
+
+  // Reset all filters
+  const resetFilters = () => {
+    setFilters({
+      purpose: 'buy',
+      location: '',
+      propertyType: '',
+      minPrice: '',
+      maxPrice: '',
+      bedrooms: ''
+    });
+    setSortBy('recommended');
+    setFilteredProperties(properties);
+  };
+
+  // Handle search button click
+  const handleSearch = (e) => {
+    e.preventDefault();
+    applyFilters();
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
+      <Header 
+        filters={filters} 
+        onFilterChange={handleFilterChange} 
+        onSearch={handleSearch}
+        onReset={resetFilters}
+      />
       
       <main className="max-w-6xl mx-auto px-4 py-8">
         
         {/* Page Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Properties for Sale in UAE
+            Properties for {filters.purpose === 'rent' ? 'Rent' : 'Sale'} in UAE
           </h1>
           <p className="text-gray-600">
-            Discover {properties.length} premium properties available for sale
+            Discover {filteredProperties.length} premium properties available for {filters.purpose === 'rent' ? 'rent' : 'sale'}
           </p>
         </div>
 
@@ -100,13 +175,34 @@ const Home = () => {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <p className="text-gray-700">
-                Showing <span className="font-bold">{properties.length}</span> of 1,234 properties
+                Showing <span className="font-bold">{filteredProperties.length}</span> of {properties.length} properties
               </p>
-              <p className="text-sm text-gray-500 mt-1">Sorted by: Recommended</p>
+              <p className="text-sm text-gray-500 mt-1">
+                {filters.purpose && `Purpose: ${filters.purpose === 'rent' ? 'Rent' : 'Buy'} • `}
+                {filters.location && `Location: ${filters.location} • `}
+                {filters.propertyType && `Type: ${filters.propertyType} • `}
+                {filters.bedrooms && `Bedrooms: ${filters.bedrooms} • `}
+                {(filters.minPrice || filters.maxPrice) && `Price: ${filters.minPrice || '0'} - ${filters.maxPrice || 'Any'}`}
+                {!filters.location && !filters.propertyType && !filters.bedrooms && !filters.minPrice && !filters.maxPrice && 
+                  filters.purpose === 'buy' && 'All Properties'}
+              </p>
             </div>
             
             <div className="flex items-center space-x-4">
-              <div className="hidden md:flex items-center space-x-2">
+              {/* Active Filters Count */}
+              {Object.values(filters).some(value => value && value !== 'buy') && (
+                <button 
+                  onClick={resetFilters}
+                  className="text-sm text-red-600 hover:text-red-700 font-medium flex items-center"
+                >
+                  <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  Clear All
+                </button>
+              )}
+              
+              <div className="flex items-center space-x-2">
                 <button className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50">
                   <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
@@ -119,25 +215,48 @@ const Home = () => {
                 </button>
               </div>
               
-              <select className="border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                <option>Sort by: Recommended</option>
-                <option>Price: Low to High</option>
-                <option>Price: High to Low</option>
-                <option>Newest First</option>
-                <option>Most Popular</option>
+              {/* Sort Dropdown - NOW WORKING */}
+              <select 
+                value={sortBy}
+                onChange={handleSortChange}
+                className="border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="recommended">Sort by: Recommended</option>
+                <option value="price-low-high">Price: Low to High</option>
+                <option value="price-high-low">Price: High to Low</option>
+                <option value="newest">Newest First</option>
+                <option value="most-popular">Most Popular</option>
               </select>
             </div>
           </div>
         </div>
 
+        {/* No Results Message */}
+        {filteredProperties.length === 0 && (
+          <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
+            <div className="text-6xl mb-4">🏠</div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">No Properties Found</h3>
+            <p className="text-gray-600 mb-6">
+              We couldn't find any properties matching your search criteria.
+            </p>
+            <button 
+              onClick={resetFilters}
+              className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+            >
+              Clear All Filters
+            </button>
+          </div>
+        )}
+
         {/* Properties List - Single Column */}
         <div className="space-y-6">
-          {properties.map(property => (
+          {filteredProperties.map(property => (
             <PropertyCard key={property.id} property={property} />
           ))}
         </div>
 
       </main>
+
 
       {/* Footer */}
       <footer className="bg-gray-900 text-white mt-16">
