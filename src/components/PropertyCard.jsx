@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import EmailInquiryModal from './EmailInquiryModal';
-import CallInfoModal from './CallInfoModal';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import EmailInquiryModal from "./EmailInquiryModal";
+import CallInfoModal from "./CallInfoModal";
 
 const PropertyCard = ({ property }) => {
   const navigate = useNavigate();
@@ -15,11 +15,13 @@ const PropertyCard = ({ property }) => {
   };
 
   const prevImage = () => {
-    setCurrentImageIndex((prevIndex) => (prevIndex - 1 + totalImages) % totalImages);
+    setCurrentImageIndex(
+      (prevIndex) => (prevIndex - 1 + totalImages) % totalImages
+    );
   };
 
   const handleCardClick = () => {
-    navigate(`/property/${property.id}`);
+    navigate(`/property/${property.id}`, { state: property });
   };
 
   const handleEmailClick = (e) => {
@@ -32,73 +34,125 @@ const PropertyCard = ({ property }) => {
     setIsCallModalOpen(true);
   };
 
-  const handleWhatsAppClick = (e) => {
-    e.stopPropagation();
-    const phoneNumber = "971544550186"; // Your WhatsApp number
-    const message = `Hello! I'm interested in this property advertised on SAHMIYE REAL ESTATE.%0A%0AProperty: ${property.title}%0APrice: AED ${property.price.toLocaleString()}%0ALocation: ${property.location}%0ARef ID: mona${property.id}-nf3EoL%0A%0AKindly do not edit this message to ensure your inquiry is sent to the agent.`;
-    
-    window.open(`https://api.whatsapp.com/send/?phone=${phoneNumber}&text=${message}`, '_blank');
+  const handleWhatsAppClick = () => {
+    const phone = whatsappContact.replaceAll(" ", "");
+
+    const message = `
+    Hello Sahmiye Real State
+
+  🏡 ${property.title}
+  
+  📍 Location: ${property.location}
+  🛏 ${property.beds} Bedrooms
+  🛁 ${property.baths} Bathrooms
+  💰 Price: ${property.currency} ${property.price}
+  
+  View Property Details.
+  `;
+
+    const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+
+    window.open(url, "_blank");
   };
 
   return (
     <>
-      <div 
+      <div
         className="bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 group cursor-pointer flex flex-col md:flex-row"
         onClick={handleCardClick}
       >
         {/* Image Section - Left */}
         <div className="md:w-2/5 relative overflow-hidden h-64 md:h-auto">
-          <img 
-            src={property.image} 
+          <img
+            src={property.image}
             alt={property.title}
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
           />
-          
+
           {/* Favorite Button */}
-          <button 
+          <button
             onClick={(e) => e.stopPropagation()}
             className="absolute top-3 right-3 bg-white/90 hover:bg-white p-2 rounded-full shadow-md z-10"
           >
-            <svg className="w-5 h-5 text-gray-600 hover:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            <svg
+              className="w-5 h-5 text-gray-600 hover:text-red-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+              />
             </svg>
           </button>
-          
+
           {/* Previous Image Button */}
-          <button 
-            onClick={(e) => { e.stopPropagation(); prevImage(); }}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              prevImage();
+            }}
             className="absolute left-3 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full z-10"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M15 19l-7-7 7-7"
+              />
             </svg>
           </button>
-          
+
           {/* Next Image Button */}
-          <button 
-            onClick={(e) => { e.stopPropagation(); nextImage(); }}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              nextImage();
+            }}
             className="absolute right-3 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full z-10"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M9 5l7 7-7 7"
+              />
             </svg>
           </button>
-          
+
           {/* Image Slider Dots */}
           <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 flex space-x-1 z-10">
             {Array.from({ length: totalImages }).map((_, index) => (
-              <div 
+              <div
                 key={index}
-                onClick={(e) => { e.stopPropagation(); setCurrentImageIndex(index); }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setCurrentImageIndex(index);
+                }}
                 className={`w-2 h-2 rounded-full cursor-pointer transition-all ${
-                  index === currentImageIndex 
-                    ? 'bg-white scale-125' 
-                    : 'bg-white/50 hover:bg-white/70'
+                  index === currentImageIndex
+                    ? "bg-white scale-125"
+                    : "bg-white/50 hover:bg-white/70"
                 }`}
               />
             ))}
           </div>
-          
+
           {/* Image Count */}
           <div className="absolute bottom-3 right-3 bg-black/70 text-white text-xs px-2 py-1 rounded z-10">
             {currentImageIndex + 1}/{totalImages}
@@ -107,15 +161,16 @@ const PropertyCard = ({ property }) => {
 
         {/* Content Section - Right */}
         <div className="md:w-3/5 p-5 flex flex-col justify-between">
-          
           {/* Top Section */}
           <div>
             {/* Price & Type */}
             <div className="mb-3">
               <p className="text-2xl font-bold text-gray-900">
-                AED {property.price.toLocaleString()}
+                {property.currency} {property.price.toLocaleString()}
               </p>
-              <p className="text-lg text-gray-700 font-medium">{property.type || "Villa"}</p>
+              <p className="text-lg text-gray-700 font-medium">
+                {property.type || "Villa"}
+              </p>
             </div>
 
             {/* Features */}
@@ -130,15 +185,20 @@ const PropertyCard = ({ property }) => {
               </div>
               <div className="flex items-center">
                 <span className="text-lg mr-2">📐</span>
-                <span className="font-medium">{property.size.toLocaleString()} sqft</span>
+                <span className="font-medium">
+                  {property.size.toLocaleString()} sqft
+                </span>
               </div>
             </div>
 
             {/* Description */}
             <p className="text-gray-600 mb-4 line-clamp-2">
-              {property.id === 1 ? "Spacious area, newly finished, 100% freehold own..." : 
-               property.id === 2 ? "Al Rawda1 Ajman - Premium villa in prime location" :
-               property.description || "Premium property in excellent condition with modern amenities"}
+              {property.id === 1
+                ? "Spacious area, newly finished, 100% freehold own..."
+                : property.id === 2
+                ? "Al Rawda1 Ajman - Premium villa in prime location"
+                : property.description ||
+                  "Premium property in excellent condition with modern amenities"}
             </p>
 
             {/* Location */}
@@ -150,21 +210,21 @@ const PropertyCard = ({ property }) => {
 
           {/* Contact Buttons */}
           <div className="flex justify-between items-center pt-4 border-t border-gray-100">
-            <button 
+            <button
               onClick={handleEmailClick}
               className="flex-1 flex items-center justify-center text-gray-700 hover:text-blue-600 transition-colors p-2"
             >
               <span className="text-xl mr-2">📧</span>
               <span className="text-sm font-medium">Email</span>
             </button>
-            <button 
+            <button
               onClick={handleCallClick}
               className="flex-1 flex items-center justify-center text-gray-700 hover:text-green-600 transition-colors p-2"
             >
               <span className="text-xl mr-2">📞</span>
               <span className="text-sm font-medium">Call</span>
             </button>
-            <button 
+            <button
               onClick={handleWhatsAppClick}
               className="flex-1 flex items-center justify-center text-gray-700 hover:text-green-500 transition-colors p-2"
             >
@@ -176,13 +236,13 @@ const PropertyCard = ({ property }) => {
       </div>
 
       {/* Modals */}
-      <EmailInquiryModal 
+      <EmailInquiryModal
         isOpen={isEmailModalOpen}
         onClose={() => setIsEmailModalOpen(false)}
         property={property}
       />
-      
-      <CallInfoModal 
+
+      <CallInfoModal
         isOpen={isCallModalOpen}
         onClose={() => setIsCallModalOpen(false)}
         property={property}
