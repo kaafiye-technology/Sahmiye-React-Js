@@ -39,7 +39,7 @@ const Header = ({ filters, onFilterChange, onSearch, onReset }) => {
                 Login / Register
               </button>
 
-              <button className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-5 py-2.5 rounded-lg font-medium text-sm shadow-md hover:shadow-lg transition-all duration-300">
+              {/* <button className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-5 py-2.5 rounded-lg font-medium text-sm shadow-md hover:shadow-lg transition-all duration-300">
                 <svg
                   className="w-4 h-4 inline mr-2"
                   fill="none"
@@ -54,7 +54,7 @@ const Header = ({ filters, onFilterChange, onSearch, onReset }) => {
                   />
                 </svg>
                 Post Property Free
-              </button>
+              </button> */}
 
               {/* Mobile Menu Button */}
               <button
