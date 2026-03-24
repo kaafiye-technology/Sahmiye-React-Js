@@ -3,4 +3,4 @@ export const API_KEY =
 
 export const API_URL = "https://api.kaafipay.so";
 
-export const whatsappContact = "+252 61 7282526";
+export const whatsappContact = "+252 61 9874953";

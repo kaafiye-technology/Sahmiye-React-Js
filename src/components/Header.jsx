@@ -1,7 +1,19 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { API_URL } from "../../constants";
+import { getApiKey } from "../../services/api";
 
 const Header = ({ filters, onFilterChange, onSearch, onReset }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [cities, setCities] = useState([]);
+
+  useEffect(() => {
+    const route = `get-dropdown-apikey/3201`;
+    const loadCities = async () => {
+      const cities = await getApiKey(route);
+      setCities(cities);
+    };
+    loadCities();
+  }, []);
 
   return (
     // <header className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50">
@@ -22,7 +34,7 @@ const Header = ({ filters, onFilterChange, onSearch, onReset }) => {
           <div className="flex items-center space-x-4">
             {/* Login/Post Ad */}
             <div className="flex items-center space-x-3">
-              <button className="hidden md:inline-flex text-sm font-medium text-gray-700 hover:text-blue-600">
+              {/* <button className="hidden md:inline-flex text-sm font-medium text-gray-700 hover:text-blue-600">
                 <svg
                   className="w-5 h-5 mr-1"
                   fill="none"
@@ -37,7 +49,7 @@ const Header = ({ filters, onFilterChange, onSearch, onReset }) => {
                   />
                 </svg>
                 Login / Register
-              </button>
+              </button> */}
 
               {/* <button className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-5 py-2.5 rounded-lg font-medium text-sm shadow-md hover:shadow-lg transition-all duration-300">
                 <svg
@@ -97,7 +109,7 @@ const Header = ({ filters, onFilterChange, onSearch, onReset }) => {
                       className="w-full bg-white border border-gray-300 rounded-lg py-3 pl-10 pr-10 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none cursor-pointer"
                     >
                       <option value="buy">Buy</option>
-                      <option value="rent">Rent</option>
+                      {/* <option value="rent">Rent</option> */}
                     </select>
                     <div className="absolute left-3 top-3 text-gray-500">
                       <svg
@@ -145,13 +157,11 @@ const Header = ({ filters, onFilterChange, onSearch, onReset }) => {
                       className="w-full bg-white border border-gray-300 rounded-lg py-3 pl-10 pr-4 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     >
                       <option value="">All Locations</option>
-                      <option value="Ajman">Ajman</option>
-                      <option value="Dubai">Dubai</option>
-                      <option value="Al Rawda">Al Rawda</option>
-                      <option value="Dubai Marina">Dubai Marina</option>
-                      <option value="Palm Jumeirah">Palm Jumeirah</option>
-                      <option value="Arabian Ranches">Arabian Ranches</option>
-                      <option value="Business Bay">Business Bay</option>
+                      {cities
+                        ?.sort((a, b) => a.name.localeCompare(b.name))
+                        .map((city) => (
+                          <option values={city.id}>{city.name}</option>
+                        ))}
                     </select>
                     <div className="absolute left-3 top-3 text-gray-400">
                       📍
@@ -174,7 +184,7 @@ const Header = ({ filters, onFilterChange, onSearch, onReset }) => {
                     <option value="Villa">Villa</option>
                     <option value="Apartment">Apartment</option>
                     <option value="Townhouse">Townhouse</option>
-                    <option value="Penthouse">Penthouse</option>
+                    <option value="Land">Land</option>
                     <option value="Studio">Studio</option>
                   </select>
                 </div>
